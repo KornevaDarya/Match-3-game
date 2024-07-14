@@ -6,6 +6,8 @@ public class Dot : MonoBehaviour
 {
     public int column;
     public int row;
+    public int previousColumn;
+    public int previousRow;
     public int targetX;
     public int targetY;
     public bool isMatched = false;
@@ -16,6 +18,7 @@ public class Dot : MonoBehaviour
     private Board board;
     private GameObject otherDot;
     public float swipeAngle = 0;
+    public float swipeResist = 1f;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +27,8 @@ public class Dot : MonoBehaviour
         targetY = (int)transform.position.y;
         row = targetY;
         column = targetX;
+        previousRow = row;
+        previousColumn = column;
     }
 
     // Update is called once per frame
@@ -69,6 +74,31 @@ public class Dot : MonoBehaviour
             board.allDots[column, row] = this.gameObject;
         }
     }
+
+    public IEnumerator CheckMoveCo()
+    {
+        
+        yield return new WaitForSeconds(.5f);
+        if (otherDot != null)
+        {
+            if (!isMatched && !otherDot.GetComponent<Dot>().isMatched)
+            {
+                otherDot.GetComponent<Dot>().row = row;
+                otherDot.GetComponent<Dot>().column = column;
+                row = previousRow;
+                column = previousColumn;
+                
+            }
+
+            else
+            {
+                board.DestroyMatches();
+
+            }
+        }
+
+    }
+
     private void OnMouseDown()
     {
 
@@ -85,8 +115,13 @@ public class Dot : MonoBehaviour
     void CalculateAngle()
     {
 
-        swipeAngle = Mathf.Atan2(finalTouchPosition.y - firstTouchPosition.y, finalTouchPosition.x - firstTouchPosition.x) * 180 / Mathf.PI;
-        MovePieces();
+        if (Mathf.Abs(finalTouchPosition.y - firstTouchPosition.y) > swipeResist || Mathf.Abs(finalTouchPosition.x - firstTouchPosition.x) > swipeResist)
+        {
+            swipeAngle = Mathf.Atan2(finalTouchPosition.y - firstTouchPosition.y, finalTouchPosition.x - firstTouchPosition.x) * 180 / Mathf.PI;
+            MovePieces();
+            
+        }
+        
 
     }
     void MovePieces()
@@ -124,6 +159,7 @@ public class Dot : MonoBehaviour
             otherDot.GetComponent<Dot>().row += 1;
             row -= 1;
         }
+        StartCoroutine(CheckMoveCo());
     }
 
     void FindMatches()

@@ -29,6 +29,16 @@ public class Board : MonoBehaviour
                 backgroundTile.name = "( " + i + ", " + j + " )";
 
                 int dotToUse = Random.Range(0, dots.Length);
+                int maxIterations = 0;
+
+                while (MatchesAt(i, j, dots[dotToUse]) && maxIterations < 100)
+                {
+                    dotToUse = Random.Range(0, dots.Length);
+                    maxIterations++;
+                    Debug.Log(maxIterations);
+                }
+                maxIterations = 0;
+
                 GameObject dot = Instantiate(dots[dotToUse], tempPosition, Quaternion.identity);
                 dot.transform.parent = this.transform;
                 dot.name = "( " + i + ", " + j + " )";
@@ -37,5 +47,63 @@ public class Board : MonoBehaviour
 
         }
     }
+    private bool MatchesAt(int column, int row, GameObject piece)
+    {
+        if (column > 1 && row > 1)
+        {
+            if (allDots[column - 1, row].tag == piece.tag && allDots[column - 2, row].tag == piece.tag)
+            {
+                return true;
+            }
+            if (allDots[column, row - 1].tag == piece.tag && allDots[column, row - 2].tag == piece.tag)
+            {
+                return true;
+            }
 
+        }
+        else if (column <= 1 || row <= 1)
+        {
+            if (row > 1)
+            {
+                if (allDots[column, row - 1].tag == piece.tag && allDots[column, row - 2].tag == piece.tag)
+                {
+                    return true;
+                }
+            }
+            if (column > 1)
+            {
+                if (allDots[column - 1, row].tag == piece.tag && allDots[column - 2, row].tag == piece.tag)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void DestroyMatchesAt(int column, int row)
+    {
+        if (allDots[column, row].GetComponent<Dot>().isMatched)
+        {
+            
+            Destroy(allDots[column, row]);
+            allDots[column, row] = null;
+        }
+    }
+
+    public void DestroyMatches()
+    {
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                if (allDots[i, j] != null)
+                {
+                    DestroyMatchesAt(i, j);
+                }
+            }
+        }
+        
+    }
 }
