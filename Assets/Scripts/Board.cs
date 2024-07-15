@@ -18,6 +18,7 @@ public class Board : MonoBehaviour
     private FindMatches findMatches;
     public GameObject[] dots;
     public GameObject[,] allDots;
+    public Dot currentDot;
     // Start is called before the first frame update
     void Start()
     {
@@ -98,7 +99,6 @@ public class Board : MonoBehaviour
     {
         if (allDots[column, row].GetComponent<Dot>().isMatched)
         {
-            findMatches.currentMatches.Remove(allDots[column, row]);
             Destroy(allDots[column, row]);
             allDots[column, row] = null;
         }
@@ -116,6 +116,7 @@ public class Board : MonoBehaviour
                 }
             }
         }
+        findMatches.currentMatches.Clear();
         StartCoroutine(DecreaseRowCo());
     }
 
@@ -138,7 +139,7 @@ public class Board : MonoBehaviour
             }
             nullCount = 0;
         }
-        yield return new WaitForSeconds(.4f);
+        yield return new WaitForSeconds(.2f);
         StartCoroutine(FillBoardCo());
 
     }
@@ -182,15 +183,16 @@ public class Board : MonoBehaviour
     private IEnumerator FillBoardCo()
     {
         RefillBoard();
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.2f);
 
         while (MatchesOnBoard())
         {
-            yield return new WaitForSeconds(.5f);
+            yield return new WaitForSeconds(.2f);
             DestroyMatches();
         }
-
-        yield return new WaitForSeconds(.5f);
+        findMatches.currentMatches.Clear();
+        currentDot = null;
+        yield return new WaitForSeconds(.2f);
         currentState = GameState.move;
     }
 }
