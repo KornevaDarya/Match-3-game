@@ -36,7 +36,7 @@ public class Dot : MonoBehaviour
         {
             SpriteRenderer mySprite = GetComponent<SpriteRenderer>();
             Color currentColor = mySprite.color;
-            mySprite.color = new Color(currentColor.r, currentColor.g, currentColor.b, .2f);
+            mySprite.color = new Color(currentColor.r, currentColor.g, currentColor.b, .4f);
         }
         targetX = column;
         targetY = row;
@@ -44,7 +44,7 @@ public class Dot : MonoBehaviour
         {
             //Move Towards the target
             tempPosition = new Vector2(targetX, transform.position.y);
-            transform.position = Vector2.Lerp(transform.position, tempPosition, .6f);
+            transform.position = Vector2.Lerp(transform.position, tempPosition, .2f);
             if (board.allDots[column, row] != this.gameObject)
             {
                 board.allDots[column, row] = this.gameObject;
@@ -63,7 +63,7 @@ public class Dot : MonoBehaviour
         {
             //Move Towards the target
             tempPosition = new Vector2(transform.position.x, targetY);
-            transform.position = Vector2.Lerp(transform.position, tempPosition, .6f);
+            transform.position = Vector2.Lerp(transform.position, tempPosition, .2f);
             if (board.allDots[column, row] != this.gameObject)
             {
                 board.allDots[column, row] = this.gameObject;
@@ -90,7 +90,7 @@ public class Dot : MonoBehaviour
                 otherDot.GetComponent<Dot>().column = column;
                 row = previousRow;
                 column = previousColumn;
-                yield return new WaitForSeconds(.2f);
+                yield return new WaitForSeconds(.1f);
                 board.currentDot = null;
                 board.currentState = GameState.move;
             }
